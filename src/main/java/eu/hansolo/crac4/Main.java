@@ -10,7 +10,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 
-public class Main {
+public class Main implements Resource {
     private static final Random                      RND        = new Random();
     private static final int                         END_VALUE  = 100_000;
     private static final int                         INTERVAL   = 5;
@@ -21,7 +21,7 @@ public class Main {
 
 
     // ******************** Constructor ***************************************
-    public Main(final Runtime runtime) implements Resource {
+    public Main(final Runtime runtime) {
         runtime.addShutdownHook(new Thread(() -> System.out.println("App stopped in shutdown hook")));
         counter         = 1;
         task            = () -> checkForPrimes();

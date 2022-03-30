@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 
-public class GenericCache<K, V> implements Cache<K, V>, Resource {
+public class GenericCache<K, V> implements Resource, Cache<K, V> {
     public    static final long                     DEFAULT_CACHE_TIMEOUT = 60;
     private   static final int                      INTERVAL              = 1;
     protected              Map<K, CacheValue<V>>    map;
