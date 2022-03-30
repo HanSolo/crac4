@@ -34,7 +34,7 @@ public class GenericCache<K, V> implements Resource, Cache<K, V> {
         this.timeout         = timeout;
         this.clear();
 
-        this.executorService.scheduleAtFixedRate(task, 10, INTERVAL, TimeUnit.SECONDS);
+        this.executorService.scheduleAtFixedRate(task, 30, INTERVAL, TimeUnit.SECONDS);
     }
 
 
