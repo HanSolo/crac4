@@ -10,6 +10,22 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 
+/**
+ * The Main class will run through a loop from 1 - END_VALUE (default 100_000)
+ * and will calculate if the number is a prime. Before it calculates the value
+ * it will check the primeCache if the number is in the cache and if yes it will
+ * return the value from the cache instead of calculation it.
+ * The loop that runs from 1 - END_VALUE will be called every 5 seconds.
+ * It will take around 10-15 runs before the cache is fully loaded with values
+ * because the cache will also remove values that have not been read within a given
+ * period of time.
+ * If you create the checkpoint after 10-15 runs and restore it after some time
+ * you should see that the access times are still fast because the cache was also
+ * restored.
+ * To make that work correctly you will find some code in the afterRestore() method
+ * in the GenericCache that takes the time between the checkpoint and the restore into
+ * account.
+ */
 public class Main implements Resource {
     private static final Random                      RND        = new Random();
     private static final int                         END_VALUE  = 100_000;
