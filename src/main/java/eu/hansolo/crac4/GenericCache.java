@@ -20,6 +20,7 @@ public class GenericCache<K, V> implements Resource, Cache<K, V> {
     private   static final int                      INTERVAL              = 1;
     protected              Map<K, CacheValue<V>>    map;
     protected              long                     timeout;
+    private                long                     checkpointAt;
     private                Runnable                 task;
     private                ScheduledExecutorService executorService;
 
@@ -45,6 +46,7 @@ public class GenericCache<K, V> implements Resource, Cache<K, V> {
     @Override public void beforeCheckpoint(Context<? extends Resource> context) throws Exception {
         System.out.println("beforeCheckpoint() called in GenericCache");
         // Shutdown services
+        checkpointAt = Instant.now().getEpochSecond();
         executorService.shutdown();
         executorService.awaitTermination(5, TimeUnit.SECONDS);
         executorService = null;
@@ -52,10 +54,14 @@ public class GenericCache<K, V> implements Resource, Cache<K, V> {
 
     @Override public void afterRestore(Context<? extends Resource> context) throws Exception {
         System.out.println("afterRestore() called in GenericCache");
+        // Take pause time into account for cached values
+        long delta = Instant.now().getEpochSecond() - checkpointAt;
+        map.entrySet().forEach(entry -> entry.getValue().setOutdatedAt(entry.getValue().outdatedAt + delta));
         // Restart services
         executorService = Executors.newScheduledThreadPool(1);
         executorService.scheduleAtFixedRate(task, 0, INTERVAL, TimeUnit.SECONDS);
     }
+
 
     @Override public boolean containsKey(final K key) { return this.map.containsKey(key); }
 
