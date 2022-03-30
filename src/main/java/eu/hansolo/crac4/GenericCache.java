@@ -34,6 +34,9 @@ public class GenericCache<K, V> implements Resource, Cache<K, V> {
         this.timeout         = timeout;
         this.clear();
 
+        // Register this class as resource in the global context of CRaC
+        Core.getGlobalContext().register(GenericCache.this);
+
         this.executorService.scheduleAtFixedRate(task, 30, INTERVAL, TimeUnit.SECONDS);
     }
 
