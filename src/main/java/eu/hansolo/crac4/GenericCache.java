@@ -15,6 +15,21 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 
+/**
+ * The GenericCache is an implementation of the Cache interface which
+ * keeps the keys of type K with it's value of type V in a ConcurrentHashMap.
+ * Everytime a value key with it's value is added to the cache, a CacheValue
+ * object will be created that contains the value and the point in time where
+ * this value will be outdated. The max age for the values can be defined
+ * in the constructor timeout parameter (in seconds).
+ * Everytime a key is read from the map, it's expiration time will be extended
+ * by the value given by timeout.
+ * With this approach values that will be read often will stay in the cache
+ * where values that are not read within the timeout will be removed from the
+ * cache.
+ * @param <K> Key
+ * @param <V> Value to cache for the key
+ */
 public class GenericCache<K, V> implements Resource, Cache<K, V> {
     public    static final long                     DEFAULT_CACHE_TIMEOUT = 60;
     private   static final int                      INTERVAL              = 1;
@@ -38,11 +53,12 @@ public class GenericCache<K, V> implements Resource, Cache<K, V> {
         // Register this class as resource in the global context of CRaC
         Core.getGlobalContext().register(GenericCache.this);
 
+        // Start the executor service that calls clean() every second
         this.executorService.scheduleAtFixedRate(task, 30, INTERVAL, TimeUnit.SECONDS);
     }
 
 
-    // ******************** Methods *******************************************
+    // ******************** CRaC Methods **************************************
     @Override public void beforeCheckpoint(Context<? extends Resource> context) throws Exception {
         System.out.println("beforeCheckpoint() called in GenericCache");
         // Shutdown services
@@ -68,6 +84,7 @@ public class GenericCache<K, V> implements Resource, Cache<K, V> {
     }
 
 
+    // ******************** Cache Methods *************************************
     @Override public boolean containsKey(final K key) { return this.map.containsKey(key); }
 
     @Override public Optional<V> get(final K key) { return Optional.ofNullable(this.map.get(key)).map(CacheValue::getValue); }
