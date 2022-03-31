@@ -29,15 +29,12 @@ After checking all numbers it will print out the time it took to check all numbe
 increase a counter.
 ```java
 private void checkForPrimes() {
-    if (isCalculating) { return; }
-    isCalculating = true;
     long start = System.nanoTime();
     for (long i = 1 ; i <= 100_000 ; i++) {
         isPrime(RND.nextInt(100_000));
     }
     System.out.println(counter + ". Run: " + ((System.nanoTime() - start) / 1_000_000 + " ms (" + primeCache.size() + " elements in cache)"));
     counter++;
-    isCalculating = false;
 }
 ```
 
