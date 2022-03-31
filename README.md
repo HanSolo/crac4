@@ -148,7 +148,7 @@ Open another shell (SHELL 2) and execute the following command to create the che
 ```
 $ cd /CRAC_PROJECT_FOLDER/build/libs
 $ jcmd crac4-17.0.0.jar JDK.checkpoint
-7577:
+20719:
 Command executed successfully
 ```
 
