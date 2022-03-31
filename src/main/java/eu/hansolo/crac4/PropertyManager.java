@@ -106,8 +106,8 @@ public enum PropertyManager {
     private void createProperties(Properties properties) {
         final String propFilePath = new StringBuilder(Constants.HOME_FOLDER).append(Constants.PROPERTIES_FILE_NAME).toString();
         try (OutputStream output = new FileOutputStream(propFilePath)) {
-            properties.put(Constants.INITIAL_CLEAN_DELAY, GenericCache.DEFAULT_CACHE_DELAY);
-            properties.put(Constants.CLEAN_INTERVAL, GenericCache.DEFAULT_CACHE_TIMEOUT);
+            properties.put(Constants.INITIAL_CLEAN_DELAY, Long.toString(GenericCache.DEFAULT_CACHE_DELAY));
+            properties.put(Constants.CLEAN_INTERVAL, Long.toString(GenericCache.DEFAULT_CACHE_TIMEOUT));
             properties.store(output, null);
         } catch (IOException ex) {
             ex.printStackTrace();

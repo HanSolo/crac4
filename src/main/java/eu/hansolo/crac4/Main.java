@@ -41,8 +41,8 @@ public class Main implements Resource {
     public Main(final Runtime runtime) {
         runtime.addShutdownHook(new Thread(() -> System.out.println("App stopped in shutdown hook")));
 
-        final int initialCleanDelay = PropertyManager.INSTANCE.getInt(Constants.INITIAL_CLEAN_DELAY, 50);
-        final int cleanInterval     = PropertyManager.INSTANCE.getInt(Constants.CLEAN_INTERVAL, 10);
+        final long initialCleanDelay = PropertyManager.INSTANCE.getLong(Constants.INITIAL_CLEAN_DELAY, 50);
+        final long cleanInterval     = PropertyManager.INSTANCE.getLong(Constants.CLEAN_INTERVAL, 10);
 
         primeCache      = new GenericCache<>(initialCleanDelay, cleanInterval);
         isCalculating   = false;
