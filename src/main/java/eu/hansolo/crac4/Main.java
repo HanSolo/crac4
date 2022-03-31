@@ -27,13 +27,14 @@ import java.util.concurrent.TimeUnit;
  * account.
  */
 public class Main implements Resource {
-    private static final Random                      RND        = new Random();
-    private static final int                         END_VALUE  = 100_000;
-    private static final int                         INTERVAL   = 3;
-    private final        GenericCache<Long, Boolean> primeCache = new GenericCache<>(10);
-    private              int                         counter;
-    private              Runnable                    task;
-    private              ScheduledExecutorService    executorService;
+    private static final    Random                      RND        = new Random();
+    private static final    int                         END_VALUE  = 100_000;
+    private static final    int                         INTERVAL   = 3;
+    private        final    GenericCache<Long, Boolean> primeCache = new GenericCache<>(10);
+    private static volatile boolean                  isCalculating;
+    private                 int                         counter;
+    private                 Runnable                    task;
+    private                 ScheduledExecutorService    executorService;
 
 
     // ******************** Constructor ***************************************
@@ -69,12 +70,15 @@ public class Main implements Resource {
     }
 
     private void checkForPrimes() {
+        if (isCalculating) { return; }
+        isCalculating = true;
         long start = System.nanoTime();
         for (long i = 1 ; i <= END_VALUE ; i++) {
             isPrime(RND.nextInt(END_VALUE));
         }
         System.out.println(counter + ". Run: " + ((System.nanoTime() - start) / 1_000_000 + " ms + (" + primeCache.size() + " elements in cache)"));
         counter++;
+        isCalculating = false;
     }
 
     private boolean isPrime(final long number) {
