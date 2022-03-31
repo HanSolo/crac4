@@ -54,7 +54,7 @@ public class GenericCache<K, V> implements Resource, Cache<K, V> {
         Core.getGlobalContext().register(GenericCache.this);
 
         // Start the executor service that calls clean() every second
-        this.executorService.scheduleAtFixedRate(task, 30, INTERVAL, TimeUnit.SECONDS);
+        this.executorService.scheduleAtFixedRate(task, 40, INTERVAL, TimeUnit.SECONDS);
     }
 
 
