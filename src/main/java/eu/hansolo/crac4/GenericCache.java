@@ -1,8 +1,8 @@
 package eu.hansolo.crac4;
 
-import jdk.crac.Context;
-import jdk.crac.Core;
-import jdk.crac.Resource;
+//import jdk.crac.Context;
+//import jdk.crac.Core;
+//import jdk.crac.Resource;
 
 import java.time.Instant;
 import java.util.Map;
@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
  * @param <K> Key
  * @param <V> Value to cache for the key
  */
-public class GenericCache<K, V> implements Resource, Cache<K, V> {
+public class GenericCache<K, V> implements /*Resource,*/ Cache<K, V> {
     public    static final long                     DEFAULT_CACHE_DELAY   = 30;
     public    static final long                     DEFAULT_CACHE_TIMEOUT = 60;
     private   static final int                      INTERVAL              = 1;
@@ -52,14 +52,14 @@ public class GenericCache<K, V> implements Resource, Cache<K, V> {
         this.clear();
 
         // Register this class as resource in the global context of CRaC
-        Core.getGlobalContext().register(GenericCache.this);
+        //Core.getGlobalContext().register(GenericCache.this);
 
         // Start the executor service that calls clean() every second
         this.executorService.scheduleAtFixedRate(task, initialDelay, INTERVAL, TimeUnit.SECONDS);
     }
 
 
-    // ******************** CRaC Methods **************************************
+    /* ******************** CRaC Methods **************************************
     @Override public void beforeCheckpoint(Context<? extends Resource> context) throws Exception {
         System.out.println("beforeCheckpoint() called in GenericCache");
         // Shutdown services
@@ -76,6 +76,7 @@ public class GenericCache<K, V> implements Resource, Cache<K, V> {
         * Important because otherwise with the next call to clean() all values
         * will be outdated and the cache will be completely empty
         */
+        /*
         long delta = Instant.now().getEpochSecond() - checkpointAt;
         map.entrySet().forEach(entry -> entry.getValue().setOutdatedAt(entry.getValue().outdatedAt + delta));
 
@@ -83,6 +84,7 @@ public class GenericCache<K, V> implements Resource, Cache<K, V> {
         executorService = Executors.newScheduledThreadPool(1);
         executorService.scheduleAtFixedRate(task, 0, INTERVAL, TimeUnit.SECONDS);
     }
+    */
 
 
     // ******************** Cache Methods *************************************

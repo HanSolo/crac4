@@ -1,8 +1,8 @@
 package eu.hansolo.crac4;
 
-import jdk.crac.Context;
-import jdk.crac.Core;
-import jdk.crac.Resource;
+//import jdk.crac.Context;
+//import jdk.crac.Core;
+//import jdk.crac.Resource;
 
 import java.util.Random;
 import java.util.concurrent.Executors;
@@ -26,7 +26,7 @@ import java.util.concurrent.TimeUnit;
  * in the GenericCache that takes the time between the checkpoint and the restore into
  * account.
  */
-public class Main implements Resource {
+public class Main { //implements Resource {
     private static final    Random                      RND      = new Random();
     private static final    int                         INTERVAL = 5;
     private        final    GenericCache<Long, Boolean> primeCache;
@@ -50,7 +50,7 @@ public class Main implements Resource {
         executorService = Executors.newSingleThreadScheduledExecutor();
 
         // Register this class as resource in the global context of CRaC
-        Core.getGlobalContext().register(Main.this);
+        //Core.getGlobalContext().register(Main.this);
 
         System.out.println("Running on CRaC (PID " + ProcessHandle.current().pid() + ")");
 
@@ -58,7 +58,7 @@ public class Main implements Resource {
     }
 
 
-    // ******************** Methods *******************************************
+    /* ******************** Methods *******************************************
     @Override public void beforeCheckpoint(Context<? extends Resource> context) throws Exception {
         System.out.println("beforeCheckpoint() called in Main");
         // Shutdown services
@@ -73,6 +73,7 @@ public class Main implements Resource {
         executorService = Executors.newScheduledThreadPool(1);
         executorService.scheduleAtFixedRate(task, 0, INTERVAL, TimeUnit.SECONDS);
     }
+    */
 
     private void checkForPrimes() {
         if (isCalculating) { return; }
