@@ -29,8 +29,8 @@ import java.util.concurrent.TimeUnit;
 public class Main implements Resource {
     private static final    Random                      RND        = new Random();
     private static final    int                         END_VALUE  = 100_000;
-    private static final    int                         INTERVAL   = 3;
-    private        final    GenericCache<Long, Boolean> primeCache = new GenericCache<>(10);
+    private static final    int                         INTERVAL   = 5;
+    private        final    GenericCache<Long, Boolean> primeCache = new GenericCache<>(50, 10);
     private static volatile boolean                  isCalculating;
     private                 int                         counter;
     private                 Runnable                    task;

@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
  * @param <V> Value to cache for the key
  */
 public class GenericCache<K, V> implements Resource, Cache<K, V> {
+    public    static final long                     DEFAULT_CACHE_DELAY   = 30;
     public    static final long                     DEFAULT_CACHE_TIMEOUT = 60;
     private   static final int                      INTERVAL              = 1;
     protected              Map<K, CacheValue<V>>    map;
@@ -42,9 +43,9 @@ public class GenericCache<K, V> implements Resource, Cache<K, V> {
 
     // ******************** Constructors **************************************
     public GenericCache() {
-        this(DEFAULT_CACHE_TIMEOUT);
+        this(DEFAULT_CACHE_DELAY, DEFAULT_CACHE_TIMEOUT);
     }
-    public GenericCache(final long timeout) {
+    public GenericCache(final long initialDelay, final long timeout) {
         this.task            = () -> clean();
         this.executorService = Executors.newSingleThreadScheduledExecutor();
         this.timeout         = timeout;
@@ -54,7 +55,7 @@ public class GenericCache<K, V> implements Resource, Cache<K, V> {
         Core.getGlobalContext().register(GenericCache.this);
 
         // Start the executor service that calls clean() every second
-        this.executorService.scheduleAtFixedRate(task, 40, INTERVAL, TimeUnit.SECONDS);
+        this.executorService.scheduleAtFixedRate(task, initialDelay, INTERVAL, TimeUnit.SECONDS);
     }
 
 
