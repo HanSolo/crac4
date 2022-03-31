@@ -11,11 +11,11 @@ import java.util.concurrent.TimeUnit;
 
 
 /**
- * The Main class will run through a loop from 1 - END_VALUE (default 100_000)
+ * The Main class will run through a loop from 1 - 100_000
  * and will calculate if the number is a prime. Before it calculates the value
  * it will check the primeCache if the number is in the cache and if yes it will
  * return the value from the cache instead of calculation it.
- * The loop that runs from 1 - END_VALUE will be called every 5 seconds.
+ * The loop that runs from 1 - 100_000 will be called every 5 seconds.
  * It will take around 10-15 runs before the cache is fully loaded with values
  * because the cache will also remove values that have not been read within a given
  * period of time.
@@ -27,9 +27,8 @@ import java.util.concurrent.TimeUnit;
  * account.
  */
 public class Main implements Resource {
-    private static final    Random                      RND        = new Random();
-    private static final    int                         END_VALUE  = 100_000;
-    private static final    int                         INTERVAL   = 5;
+    private static final    Random                      RND      = new Random();
+    private static final    int                         INTERVAL = 5;
     private        final    GenericCache<Long, Boolean> primeCache;
     private static volatile boolean                     isCalculating;
     private                 int                         counter;
@@ -42,9 +41,9 @@ public class Main implements Resource {
         runtime.addShutdownHook(new Thread(() -> System.out.println("App stopped in shutdown hook")));
 
         final long initialCleanDelay = PropertyManager.INSTANCE.getLong(Constants.INITIAL_CLEAN_DELAY, 50);
-        final long cleanInterval     = PropertyManager.INSTANCE.getLong(Constants.CLEAN_INTERVAL, 10);
+        final long cacheTimeout     = PropertyManager.INSTANCE.getLong(Constants.CACHE_TIMEOUT, 10);
 
-        primeCache      = new GenericCache<>(initialCleanDelay, cleanInterval);
+        primeCache      = new GenericCache<>(initialCleanDelay, cacheTimeout);
         isCalculating   = false;
         counter         = 1;
         task            = () -> checkForPrimes();
@@ -79,10 +78,10 @@ public class Main implements Resource {
         if (isCalculating) { return; }
         isCalculating = true;
         long start = System.nanoTime();
-        for (long i = 1 ; i <= END_VALUE ; i++) {
-            isPrime(RND.nextInt(END_VALUE));
+        for (long i = 1 ; i <= 100_000 ; i++) {
+            isPrime(RND.nextInt(100_000));
         }
-        System.out.println(counter + ". Run: " + ((System.nanoTime() - start) / 1_000_000 + " ms + (" + primeCache.size() + " elements in cache)"));
+        System.out.println(counter + ". Run: " + ((System.nanoTime() - start) / 1_000_000 + " ms (" + primeCache.size() + " elements in cache)"));
         counter++;
         isCalculating = false;
     }

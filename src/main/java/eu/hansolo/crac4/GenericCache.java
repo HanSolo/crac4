@@ -21,11 +21,11 @@ import java.util.stream.Collectors;
  * Everytime a value key with it's value is added to the cache, a CacheValue
  * object will be created that contains the value and the point in time where
  * this value will be outdated. The max age for the values can be defined
- * in the constructor timeout parameter (in seconds).
+ * in the constructor cacheTimeout parameter (in seconds).
  * Everytime a key is read from the map, it's expiration time will be extended
- * by the value given by timeout.
- * With this approach values that will be read often will stay in the cache
- * where values that are not read within the timeout will be removed from the
+ * by the value given by cacheTimeout.
+ * With this approach values that will be read more often will stay in the cache
+ * where values that are not read within the cacheTimeout will be removed from the
  * cache.
  * @param <K> Key
  * @param <V> Value to cache for the key
@@ -35,7 +35,7 @@ public class GenericCache<K, V> implements Resource, Cache<K, V> {
     public    static final long                     DEFAULT_CACHE_TIMEOUT = 60;
     private   static final int                      INTERVAL              = 1;
     protected              Map<K, CacheValue<V>>    map;
-    protected              long                     timeout;
+    protected              long                     cacheTimeout;
     private                long                     checkpointAt;
     private                Runnable                 task;
     private                ScheduledExecutorService executorService;
@@ -45,10 +45,10 @@ public class GenericCache<K, V> implements Resource, Cache<K, V> {
     public GenericCache() {
         this(DEFAULT_CACHE_DELAY, DEFAULT_CACHE_TIMEOUT);
     }
-    public GenericCache(final long initialDelay, final long timeout) {
+    public GenericCache(final long initialDelay, final long cacheTimeout) {
         this.task            = () -> clean();
         this.executorService = Executors.newSingleThreadScheduledExecutor();
-        this.timeout         = timeout;
+        this.cacheTimeout    = cacheTimeout;
         this.clear();
 
         // Register this class as resource in the global context of CRaC
@@ -94,7 +94,7 @@ public class GenericCache<K, V> implements Resource, Cache<K, V> {
 
     @Override public void remove(final K key) { this.map.remove(key); }
 
-    @Override public void clear()                 { this.map = new ConcurrentHashMap<>(); }
+    @Override public void clear() { this.map = new ConcurrentHashMap<>(); }
 
     @Override public void clean() { getExpiredKeys().forEach(key -> remove(key)); }
 
@@ -108,7 +108,7 @@ public class GenericCache<K, V> implements Resource, Cache<K, V> {
 
     protected boolean isExpired(final K key) { return Instant.now().getEpochSecond() > map.get(key).getOutdatedAt(); }
 
-    protected CacheValue<V> createCacheValue(final V value) { return new CacheValue<>(value, Instant.now().getEpochSecond() + timeout); }
+    protected CacheValue<V> createCacheValue(final V value) { return new CacheValue<>(value, Instant.now().getEpochSecond() + cacheTimeout); }
 
 
     // ******************** Internal classes **********************************
@@ -126,7 +126,7 @@ public class GenericCache<K, V> implements Resource, Cache<K, V> {
 
         // ******************** Methods ***************************************
         public V getValue() {
-            outdatedAt += timeout;
+            outdatedAt += cacheTimeout;
             return value;
         }
         public void setValue(final V value) { this.value = value; }
