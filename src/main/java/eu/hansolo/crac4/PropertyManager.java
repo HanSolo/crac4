@@ -93,7 +93,7 @@ public enum PropertyManager {
     public void resetSearchPathProperty() {
         final String propFilePath = new StringBuilder(Constants.HOME_FOLDER).append(Constants.PROPERTIES_FILE_NAME).toString();
         try (OutputStream output = new FileOutputStream(propFilePath)) {
-            properties.put(Constants.INITIAL_CLEAN_DELAY, GenericCache.DEFAULT_CACHE_DELAY);
+            properties.put(Constants.INITIAL_CACHE_CLEAN_DELAY, GenericCache.DEFAULT_CACHE_DELAY);
             properties.put(Constants.CACHE_TIMEOUT, GenericCache.DEFAULT_CACHE_TIMEOUT);
             properties.store(output, null);
         } catch (IOException ex) {
