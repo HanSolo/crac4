@@ -30,7 +30,6 @@ public class Main implements Resource {
     private static final    Random                      RND      = new Random();
     private static final    int                         INTERVAL = 5;
     private        final    GenericCache<Long, Boolean> primeCache;
-    private static volatile boolean                     isCalculating;
     private                 int                         counter;
     private                 Runnable                    task;
     private                 ScheduledExecutorService    executorService;
@@ -44,7 +43,6 @@ public class Main implements Resource {
         final long cacheTimeout      = PropertyManager.INSTANCE.getLong(Constants.CACHE_TIMEOUT, 10);
 
         primeCache      = new GenericCache<>(initialCleanDelay, cacheTimeout);
-        isCalculating   = false;
         counter         = 1;
         task            = () -> checkForPrimes();
         executorService = Executors.newSingleThreadScheduledExecutor();
@@ -75,15 +73,12 @@ public class Main implements Resource {
     }
 
     private void checkForPrimes() {
-        if (isCalculating) { return; }
-        isCalculating = true;
         long start = System.nanoTime();
         for (long i = 1 ; i <= 100_000 ; i++) {
             isPrime(RND.nextInt(100_000));
         }
         System.out.println(counter + ". Run: " + ((System.nanoTime() - start) / 1_000_000 + " ms (" + primeCache.size() + " elements in cache)"));
         counter++;
-        isCalculating = false;
     }
 
     private boolean isPrime(final long number) {
