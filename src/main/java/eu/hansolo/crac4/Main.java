@@ -131,7 +131,7 @@ public class Main implements Resource {
     }
 
     private void cleanCracFilesFolder() {
-        System.out.println("Cleanup " + CRAC_FILES);
+        System.out.println("\nCleanup " + CRAC_FILES);
         File cracFiles = new File(CRAC_FILES);
         if (cracFiles.exists() && cracFiles.isDirectory()) {
             Arrays.stream(Objects.requireNonNull(cracFiles.listFiles())).filter(Predicate.not(File::isDirectory)).forEach(File::delete);
