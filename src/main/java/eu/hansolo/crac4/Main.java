@@ -30,6 +30,7 @@ public class Main implements Resource {
     private static final    long                        THRESHOLD = 40; // 40ms is the threshold where the app will be warmed up
     private        final    GenericCache<Long, Boolean> primeCache;
     private                 int                         counter;
+    private                 boolean                     checkpointed;
     private                 Runnable                    task;
     private                 ScheduledExecutorService    executorService;
 
@@ -43,6 +44,7 @@ public class Main implements Resource {
 
         primeCache      = new GenericCache<>(initialCleanDelay, cacheTimeout);
         counter         = 1;
+        checkpointed    = false;
         task            = () -> checkForPrimes();
         executorService = Executors.newSingleThreadScheduledExecutor();
 
@@ -59,6 +61,7 @@ public class Main implements Resource {
     // ******************** Methods *******************************************
     @Override public void beforeCheckpoint(Context<? extends Resource> context) throws Exception {
         System.out.println("beforeCheckpoint() called in Main");
+        checkpointed = true;
         // Shutdown services
         //executorService.shutdown();
         //executorService.awaitTermination(5, TimeUnit.SECONDS);
@@ -79,7 +82,7 @@ public class Main implements Resource {
         }
         long delta = ((System.nanoTime() - start) / 1_000_000);
         System.out.println(counter + ". Run: " + (delta + " ms (" + primeCache.size() + " elements in cache)"));
-        if (delta < THRESHOLD) {
+        if (!checkpointed && delta < THRESHOLD) {
             try {
                 Core.checkpointRestore();
             } catch (CheckpointException e) {
