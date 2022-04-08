@@ -27,8 +27,9 @@ import java.util.concurrent.TimeUnit;
  * account.
  */
 public class Main implements Resource {
-    private static final    Random                      RND      = new Random();
-    private static final    int                         INTERVAL = 5;
+    private static final    Random                      RND       = new Random();
+    private static final    int                         INTERVAL  = 5;
+    private static final    long                        THRESHOLD = 20; // 20ms is the threshold where the app will be warmed up
     private        final    GenericCache<Long, Boolean> primeCache;
     private                 int                         counter;
     private                 Runnable                    task;
@@ -60,16 +61,16 @@ public class Main implements Resource {
     @Override public void beforeCheckpoint(Context<? extends Resource> context) throws Exception {
         System.out.println("beforeCheckpoint() called in Main");
         // Shutdown services
-        executorService.shutdown();
-        executorService.awaitTermination(5, TimeUnit.SECONDS);
-        executorService = null;
+        //executorService.shutdown();
+        //executorService.awaitTermination(5, TimeUnit.SECONDS);
+        //executorService = null;
     }
 
     @Override public void afterRestore(Context<? extends Resource> context) throws Exception {
         System.out.println("afterRestore() called in Main");
         // Restart services
-        executorService = Executors.newScheduledThreadPool(1);
-        executorService.scheduleAtFixedRate(task, 0, INTERVAL, TimeUnit.SECONDS);
+        //executorService = Executors.newScheduledThreadPool(1);
+        //executorService.scheduleAtFixedRate(task, 0, INTERVAL, TimeUnit.SECONDS);
     }
 
     private void checkForPrimes() {
@@ -77,7 +78,9 @@ public class Main implements Resource {
         for (long i = 1 ; i <= 100_000 ; i++) {
             isPrime(RND.nextInt(100_000));
         }
-        System.out.println(counter + ". Run: " + ((System.nanoTime() - start) / 1_000_000 + " ms (" + primeCache.size() + " elements in cache)"));
+        long delta = ((System.nanoTime() - start) / 1_000_000);
+        System.out.println(counter + ". Run: " + (delta + " ms (" + primeCache.size() + " elements in cache)"));
+        if (delta < THRESHOLD) { Core.checkpointRestore(); }
         counter++;
     }
 
