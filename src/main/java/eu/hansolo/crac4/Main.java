@@ -47,6 +47,7 @@ public class Main implements Resource {
     public Main(final Runtime runtime) {
         if (!Files.exists(Paths.get(CRAC_FILES))) {
             try {
+                System.out.println("Creating /crac-files folder at: " + CRAC_FILES);
                 Files.createDirectory(Paths.get(CRAC_FILES));
             } catch (IOException e) {
                 System.out.println("Error creating /crac-files folder. " + e);
