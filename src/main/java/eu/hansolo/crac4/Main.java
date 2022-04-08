@@ -65,7 +65,10 @@ public class Main implements Resource {
         }
 
         runtime.addShutdownHook(new Thread(() -> {
-            cleanCracFilesFolder();
+            // Clean crac-files folder only if not in automatic checkpoint mode
+            if (!autoCheckpoint) {
+                cleanCracFilesFolder();
+            }
             System.out.println("App stopped in shutdown hook");
         }));
 
