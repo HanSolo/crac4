@@ -95,10 +95,17 @@ public class Main implements Resource {
     @Override public void beforeCheckpoint(Context<? extends Resource> context) throws Exception {
         System.out.println("beforeCheckpoint() called in Main");
         checkpointed = true;
+        // Free resources or stop services
+        executorService.shutdown();
+        executorService.awaitTermination(5, TimeUnit.SECONDS);
+        executorService = null;
     }
 
     @Override public void afterRestore(Context<? extends Resource> context) throws Exception {
         System.out.println("afterRestore() called in Main");
+        // Restore resources or re-start services
+        executorService = Executors.newSingleThreadScheduledExecutor();
+        executorService.scheduleAtFixedRate(task, 0, INTERVAL, TimeUnit.SECONDS);
     }
 
     private void checkForPrimes() {
