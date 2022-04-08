@@ -2,10 +2,17 @@ package eu.hansolo.crac4;
 
 import jdk.crac.*;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Predicate;
 
 
 /**
@@ -25,9 +32,10 @@ import java.util.concurrent.TimeUnit;
  * account.
  */
 public class Main implements Resource {
-    private static final    Random                      RND       = new Random();
-    private static final    int                         INTERVAL  = 5;
-    private static final    long                        THRESHOLD = 40; // 40ms is the threshold where the app will be warmed up
+    private static final    Random                      RND        = new Random();
+    private static final    int                         INTERVAL   = 5;
+    private static final    long                        THRESHOLD  = 40; // 40ms is the threshold where the app will be warmed up
+    private static final    String                      CRAC_FILES = System.getProperty("user.home") + File.separator + "crac-files";
     private        final    GenericCache<Long, Boolean> primeCache;
     private                 int                         counter;
     private                 boolean                     checkpointed;
@@ -37,7 +45,22 @@ public class Main implements Resource {
 
     // ******************** Constructor ***************************************
     public Main(final Runtime runtime) {
-        runtime.addShutdownHook(new Thread(() -> System.out.println("App stopped in shutdown hook")));
+        if (!Files.exists(Paths.get(CRAC_FILES))) {
+            try {
+                Files.createDirectory(Paths.get(CRAC_FILES));
+            } catch (IOException e) {
+                System.out.println("Error creating /crac-files folder. " + e);
+            }
+        }
+
+        runtime.addShutdownHook(new Thread(() -> {
+            System.out.println("App stopped in shutdown hook");
+            System.out.println("Cleanup /crac-files folder...");
+            File cracFiles = new File(CRAC_FILES);
+            if (cracFiles.exists()) {
+                Arrays.stream(Objects.requireNonNull(cracFiles.listFiles())).filter(Predicate.not(File::isDirectory)).forEach(File::delete);
+            }
+        }));
 
         final long initialCleanDelay = PropertyManager.INSTANCE.getLong(Constants.INITIAL_CACHE_CLEAN_DELAY, 50);
         final long cacheTimeout      = PropertyManager.INSTANCE.getLong(Constants.CACHE_TIMEOUT, 10);
