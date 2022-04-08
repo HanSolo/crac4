@@ -6,7 +6,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.time.Instant;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Random;
@@ -35,26 +34,15 @@ import java.util.function.Predicate;
 public class Main implements Resource {
     private static final    Random                      RND        = new Random();
     private static final    int                         INTERVAL   = 5;
-    private static final    long                        THRESHOLD  = 40; // 40ms is the threshold where the app will be warmed up
     private static final    String                      CRAC_FILES = System.getProperty("user.home") + File.separator + "crac-files";
     private        final    GenericCache<Long, Boolean> primeCache;
-    private static          Main                        main;
-    private                 String[]                    args;
-    private                 boolean                     autoCheckpoint;
     private                 int                         counter;
-    private                 boolean                     checkpointed;
     private                 Runnable                    task;
     private                 ScheduledExecutorService    executorService;
 
 
     // ******************** Constructor ***************************************
-    public Main(final Runtime runtime, final String[] args) {
-        if (args.length > 0) {
-            autoCheckpoint = args[0].equalsIgnoreCase("auto");
-        } else {
-            autoCheckpoint = false;
-        }
-
+    public Main(final Runtime runtime) {
         if (!Files.exists(Paths.get(CRAC_FILES))) {
             try {
                 System.out.println("Creating " + CRAC_FILES);
@@ -66,9 +54,7 @@ public class Main implements Resource {
 
         runtime.addShutdownHook(new Thread(() -> {
             // Clean crac-files folder only if not in automatic checkpoint mode
-            if (!autoCheckpoint) {
-                cleanCracFilesFolder();
-            }
+            cleanCracFilesFolder();
             System.out.println("App stopped in shutdown hook");
         }));
 
@@ -77,15 +63,14 @@ public class Main implements Resource {
 
         primeCache      = new GenericCache<>(initialCleanDelay, cacheTimeout);
         counter         = 1;
-        checkpointed    = false;
         task            = () -> checkForPrimes();
         executorService = Executors.newSingleThreadScheduledExecutor();
 
         // Register this class as resource in the global context of CRaC
         Core.getGlobalContext().register(Main.this);
 
-        System.out.println("Running on CRaC (PID " + ProcessHandle.current().pid() + ")" + (autoCheckpoint ? " with automatic checkpoint" : ""));
-        System.out.println("First run will take around 30 seconds...");
+        System.out.println("Running on CRaC (PID " + ProcessHandle.current().pid() + ")");
+        System.out.println("First run will take up to 30 seconds...");
 
         executorService.scheduleAtFixedRate(task, 0, INTERVAL, TimeUnit.SECONDS);
     }
@@ -94,7 +79,6 @@ public class Main implements Resource {
     // ******************** Methods *******************************************
     @Override public void beforeCheckpoint(Context<? extends Resource> context) throws Exception {
         System.out.println("beforeCheckpoint() called in Main");
-        checkpointed = true;
         // Free resources or stop services
         executorService.shutdown();
         executorService.awaitTermination(5, TimeUnit.SECONDS);
@@ -115,16 +99,6 @@ public class Main implements Resource {
         }
         long delta = ((System.nanoTime() - start) / 1_000_000);
         System.out.println(counter + ". Run: " + (delta + " ms (" + primeCache.size() + " elements in cache)"));
-        if (autoCheckpoint && !checkpointed && delta < THRESHOLD) {
-            try {
-                Core.checkpointRestore();
-            } catch (CheckpointException e) {
-                System.out.println(e);
-            } catch (RestoreException e) {
-                System.out.println(e);
-            }
-
-        }
         counter++;
     }
 
@@ -151,7 +125,7 @@ public class Main implements Resource {
 
     public static void main(String[] args) {
         Runtime runtime = Runtime.getRuntime();
-        main = new Main(runtime, args);
+        Main main = new Main(runtime);
 
         try {
             while (true) { Thread.sleep(1000); }
