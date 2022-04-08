@@ -64,9 +64,9 @@ public class GenericCache<K, V> implements Resource, Cache<K, V> {
         System.out.println("beforeCheckpoint() called in GenericCache");
         // Shutdown services
         checkpointAt = Instant.now().getEpochSecond();
-        executorService.shutdown();
-        executorService.awaitTermination(5, TimeUnit.SECONDS);
-        executorService = null;
+        //executorService.shutdown();
+        //executorService.awaitTermination(5, TimeUnit.SECONDS);
+        //executorService = null;
     }
 
     @Override public void afterRestore(Context<? extends Resource> context) throws Exception {
@@ -80,8 +80,8 @@ public class GenericCache<K, V> implements Resource, Cache<K, V> {
         map.entrySet().forEach(entry -> entry.getValue().setOutdatedAt(entry.getValue().outdatedAt + delta));
 
         // Restart services
-        executorService = Executors.newScheduledThreadPool(1);
-        executorService.scheduleAtFixedRate(task, 0, INTERVAL, TimeUnit.SECONDS);
+        //executorService = Executors.newScheduledThreadPool(1);
+        //executorService.scheduleAtFixedRate(task, 0, INTERVAL, TimeUnit.SECONDS);
     }
 
 

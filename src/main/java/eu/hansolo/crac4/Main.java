@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Random;
@@ -94,6 +95,7 @@ public class Main implements Resource {
 
     @Override public void afterRestore(Context<? extends Resource> context) throws Exception {
         System.out.println("afterRestore() called in Main");
+        // Make sure the entries in the cache are not timed out
         // Restart services
         //executorService = Executors.newScheduledThreadPool(1);
         //executorService.scheduleAtFixedRate(task, 0, INTERVAL, TimeUnit.SECONDS);
