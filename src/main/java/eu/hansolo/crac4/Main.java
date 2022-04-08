@@ -50,6 +50,7 @@ public class Main implements Resource {
         Core.getGlobalContext().register(Main.this);
 
         System.out.println("Running on CRaC (PID " + ProcessHandle.current().pid() + ")");
+        System.out.println("First run will take around 30 seconds...");
 
         executorService.scheduleAtFixedRate(task, 0, INTERVAL, TimeUnit.SECONDS);
     }
