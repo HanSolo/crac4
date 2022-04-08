@@ -38,6 +38,7 @@ public class Main implements Resource {
     private static final    long                        THRESHOLD  = 40; // 40ms is the threshold where the app will be warmed up
     private static final    String                      CRAC_FILES = System.getProperty("user.home") + File.separator + "crac-files";
     private        final    GenericCache<Long, Boolean> primeCache;
+    private static          Main                        main;
     private                 int                         counter;
     private                 boolean                     checkpointed;
     private                 Runnable                    task;
@@ -132,7 +133,7 @@ public class Main implements Resource {
 
     public static void main(String[] args) {
         Runtime runtime = Runtime.getRuntime();
-        Main main = new Main(runtime);
+        main = new Main(runtime);
 
         try {
             while (true) { Thread.sleep(1000); }
