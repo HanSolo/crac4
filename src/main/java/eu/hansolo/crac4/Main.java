@@ -39,6 +39,8 @@ public class Main implements Resource {
     private static final    String                      CRAC_FILES = System.getProperty("user.home") + File.separator + "crac-files";
     private        final    GenericCache<Long, Boolean> primeCache;
     private static          Main                        main;
+    private                 String[]                    args;
+    private                 boolean                     autoCheckpoint;
     private                 int                         counter;
     private                 boolean                     checkpointed;
     private                 Runnable                    task;
@@ -46,7 +48,13 @@ public class Main implements Resource {
 
 
     // ******************** Constructor ***************************************
-    public Main(final Runtime runtime) {
+    public Main(final Runtime runtime, final String[] args) {
+        if (args.length > 0) {
+            autoCheckpoint = args[0].equalsIgnoreCase("auto");
+        } else {
+            autoCheckpoint = false;
+        }
+
         if (!Files.exists(Paths.get(CRAC_FILES))) {
             try {
                 System.out.println("Creating " + CRAC_FILES);
@@ -97,7 +105,7 @@ public class Main implements Resource {
         }
         long delta = ((System.nanoTime() - start) / 1_000_000);
         System.out.println(counter + ". Run: " + (delta + " ms (" + primeCache.size() + " elements in cache)"));
-        if (!checkpointed && delta < THRESHOLD) {
+        if (autoCheckpoint && !checkpointed && delta < THRESHOLD) {
             try {
                 Core.checkpointRestore();
             } catch (CheckpointException e) {
@@ -133,7 +141,7 @@ public class Main implements Resource {
 
     public static void main(String[] args) {
         Runtime runtime = Runtime.getRuntime();
-        main = new Main(runtime);
+        main = new Main(runtime, args);
 
         try {
             while (true) { Thread.sleep(1000); }
