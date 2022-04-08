@@ -83,18 +83,10 @@ public class Main implements Resource {
     @Override public void beforeCheckpoint(Context<? extends Resource> context) throws Exception {
         System.out.println("beforeCheckpoint() called in Main");
         checkpointed = true;
-        // Shutdown services
-        //executorService.shutdown();
-        //executorService.awaitTermination(5, TimeUnit.SECONDS);
-        //executorService = null;
     }
 
     @Override public void afterRestore(Context<? extends Resource> context) throws Exception {
         System.out.println("afterRestore() called in Main");
-        // Make sure the entries in the cache are not timed out
-        // Restart services
-        //executorService = Executors.newScheduledThreadPool(1);
-        //executorService.scheduleAtFixedRate(task, 0, INTERVAL, TimeUnit.SECONDS);
     }
 
     private void checkForPrimes() {
@@ -141,11 +133,5 @@ public class Main implements Resource {
     public static void main(String[] args) {
         Runtime runtime = Runtime.getRuntime();
         Main main = new Main(runtime);
-
-        /*
-        try {
-            while (true) { Thread.sleep(1000); }
-        } catch (InterruptedException e) { }
-        */
     }
 }
