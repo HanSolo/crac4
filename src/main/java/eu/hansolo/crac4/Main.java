@@ -27,7 +27,7 @@ import java.util.concurrent.TimeUnit;
 public class Main implements Resource {
     private static final    Random                      RND       = new Random();
     private static final    int                         INTERVAL  = 5;
-    private static final    long                        THRESHOLD = 20; // 20ms is the threshold where the app will be warmed up
+    private static final    long                        THRESHOLD = 40; // 40ms is the threshold where the app will be warmed up
     private        final    GenericCache<Long, Boolean> primeCache;
     private                 int                         counter;
     private                 Runnable                    task;
