@@ -48,7 +48,7 @@ public class Main implements Resource {
     public Main(final Runtime runtime) {
         if (!Files.exists(Paths.get(CRAC_FILES))) {
             try {
-                System.out.println("Creating /crac-files folder at: " + CRAC_FILES);
+                System.out.println("Creating " + CRAC_FILES);
                 Files.createDirectory(Paths.get(CRAC_FILES));
             } catch (IOException e) {
                 System.out.println("Error creating /crac-files folder. " + e);
@@ -56,12 +56,8 @@ public class Main implements Resource {
         }
 
         runtime.addShutdownHook(new Thread(() -> {
+            cleanCracFilesFolder();
             System.out.println("App stopped in shutdown hook");
-            System.out.println("Cleanup /crac-files folder...");
-            File cracFiles = new File(CRAC_FILES);
-            if (cracFiles.exists()) {
-                Arrays.stream(Objects.requireNonNull(cracFiles.listFiles())).filter(Predicate.not(File::isDirectory)).forEach(File::delete);
-            }
         }));
 
         final long initialCleanDelay = PropertyManager.INSTANCE.getLong(Constants.INITIAL_CACHE_CLEAN_DELAY, 50);
@@ -134,6 +130,13 @@ public class Main implements Resource {
         return isPrime;
     }
 
+    private void cleanCracFilesFolder() {
+        System.out.println("Cleanup " + CRAC_FILES);
+        File cracFiles = new File(CRAC_FILES);
+        if (cracFiles.exists() && cracFiles.isDirectory()) {
+            Arrays.stream(Objects.requireNonNull(cracFiles.listFiles())).filter(Predicate.not(File::isDirectory)).forEach(File::delete);
+        }
+    }
 
     public static void main(String[] args) {
         Runtime runtime = Runtime.getRuntime();
