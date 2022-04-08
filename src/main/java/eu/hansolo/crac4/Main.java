@@ -133,7 +133,7 @@ public class Main implements Resource {
     public static void main(String[] args) {
         Runtime runtime = Runtime.getRuntime();
         Main main = new Main(runtime);
-        
+
         try {
             while (true) { Thread.sleep(1000); }
         } catch (InterruptedException e) { }
