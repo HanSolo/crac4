@@ -1,8 +1,6 @@
 package eu.hansolo.crac4;
 
-import jdk.crac.Context;
-import jdk.crac.Core;
-import jdk.crac.Resource;
+import jdk.crac.*;
 
 import java.util.Random;
 import java.util.concurrent.Executors;
