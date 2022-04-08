@@ -80,7 +80,16 @@ public class Main implements Resource {
         }
         long delta = ((System.nanoTime() - start) / 1_000_000);
         System.out.println(counter + ". Run: " + (delta + " ms (" + primeCache.size() + " elements in cache)"));
-        if (delta < THRESHOLD) { Core.checkpointRestore(); }
+        if (delta < THRESHOLD) {
+            try {
+                Core.checkpointRestore();
+            } catch (CheckpointException e) {
+                System.out.println(e);
+            } catch (RestoreException e) {
+                System.out.println(e);
+            }
+
+        }
         counter++;
     }
 
