@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.Executors;
@@ -97,8 +98,9 @@ public class Main implements Resource {
         for (long i = 1 ; i <= 100_000 ; i++) {
             isPrime(RND.nextInt(100_000));
         }
-        long delta = ((System.nanoTime() - start) / 1_000_000);
-        System.out.println(counter + ". Run: " + (delta + " ms (" + primeCache.size() + " elements in cache)"));
+        long delta  = ((System.nanoTime() - start) / 1_000_000);
+        int  cached = primeCache.size();
+        System.out.println(new StringBuilder().append(counter).append(". Run: ").append(delta).append(" ms (").append(String.format(Locale.US, "%.1f%%", (cached / 1000))).append(" -> ").append(cached).append(" elements cached)"));
         counter++;
     }
 
