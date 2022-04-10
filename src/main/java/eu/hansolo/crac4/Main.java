@@ -60,7 +60,7 @@ public class Main implements Resource {
         }));
 
         final long initialCleanDelay = PropertyManager.INSTANCE.getLong(Constants.INITIAL_CACHE_CLEAN_DELAY, 50);
-        final long cacheTimeout      = PropertyManager.INSTANCE.getLong(Constants.CACHE_TIMEOUT, 10);
+        final long cacheTimeout      = PropertyManager.INSTANCE.getLong(Constants.CACHE_TIMEOUT, 12);
 
         primeCache      = new GenericCache<>(initialCleanDelay, cacheTimeout);
         counter         = 1;
