@@ -98,9 +98,8 @@ public class Main implements Resource {
         for (long i = 1 ; i <= 100_000 ; i++) {
             isPrime(RND.nextInt(100_000));
         }
-        long delta  = ((System.nanoTime() - start) / 1_000_000);
-        int  cached = primeCache.size();
-        System.out.println(new StringBuilder().append(counter).append(". Run: ").append(delta).append(" ms (").append(String.format(Locale.US, "%.1f%%", (cached / 1000))).append(" -> ").append(cached).append(" elements cached)"));
+        //System.out.println(counter + ". Run: " + ((System.nanoTime() - start) / 1_000_000 + " ms (" + primeCache.size() + " elements in cache)"));
+        System.out.println(counter + ". Run: " + ((System.nanoTime() - start) / 1_000_000 + " ms (" + primeCache.size() + " elements cached, " + String.format(Locale.US, "%.1f", primeCache.size() / 1_000.0) + " )"));
         counter++;
     }
 
