@@ -1,13 +1,19 @@
 package eu.hansolo.crac4;
 
-//import jdk.crac.Context;
-//import jdk.crac.Core;
-//import jdk.crac.Resource;
+//import jdk.crac.*;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.Locale;
+import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Predicate;
 
 
 /**
@@ -26,9 +32,10 @@ import java.util.concurrent.TimeUnit;
  * in the GenericCache that takes the time between the checkpoint and the restore into
  * account.
  */
-public class Main { //implements Resource {
-    private static final    Random                      RND      = new Random();
-    private static final    int                         INTERVAL = 5;
+public class Main /*implements Resource*/ {
+    private static final    Random                      RND        = new Random();
+    private static final    int                         INTERVAL   = 5;
+    private static final    String                      CRAC_FILES = System.getProperty("user.home") + File.separator + "crac-files";
     private        final    GenericCache<Long, Boolean> primeCache;
     private                 int                         counter;
     private                 Runnable                    task;
@@ -37,10 +44,23 @@ public class Main { //implements Resource {
 
     // ******************** Constructor ***************************************
     public Main(final Runtime runtime) {
-        runtime.addShutdownHook(new Thread(() -> System.out.println("App stopped in shutdown hook")));
+        if (!Files.exists(Paths.get(CRAC_FILES))) {
+            try {
+                System.out.println("Creating " + CRAC_FILES);
+                Files.createDirectory(Paths.get(CRAC_FILES));
+            } catch (IOException e) {
+                System.out.println("Error creating /crac-files folder. " + e);
+            }
+        }
+
+        runtime.addShutdownHook(new Thread(() -> {
+            // Clean crac-files folder only if not in automatic checkpoint mode
+            cleanCracFilesFolder();
+            System.out.println("App stopped in shutdown hook");
+        }));
 
         final long initialCleanDelay = PropertyManager.INSTANCE.getLong(Constants.INITIAL_CACHE_CLEAN_DELAY, 50);
-        final long cacheTimeout      = PropertyManager.INSTANCE.getLong(Constants.CACHE_TIMEOUT, 10);
+        final long cacheTimeout      = PropertyManager.INSTANCE.getLong(Constants.CACHE_TIMEOUT, 12);
 
         primeCache      = new GenericCache<>(initialCleanDelay, cacheTimeout);
         counter         = 1;
@@ -51,6 +71,7 @@ public class Main { //implements Resource {
         //Core.getGlobalContext().register(Main.this);
 
         System.out.println("Running on CRaC (PID " + ProcessHandle.current().pid() + ")");
+        System.out.println("First run will take up to 30 seconds...");
 
         executorService.scheduleAtFixedRate(task, 0, INTERVAL, TimeUnit.SECONDS);
     }
@@ -59,7 +80,7 @@ public class Main { //implements Resource {
     /* ******************** Methods *******************************************
     @Override public void beforeCheckpoint(Context<? extends Resource> context) throws Exception {
         System.out.println("beforeCheckpoint() called in Main");
-        // Shutdown services
+        // Free resources or stop services
         executorService.shutdown();
         executorService.awaitTermination(5, TimeUnit.SECONDS);
         executorService = null;
@@ -67,8 +88,8 @@ public class Main { //implements Resource {
 
     @Override public void afterRestore(Context<? extends Resource> context) throws Exception {
         System.out.println("afterRestore() called in Main");
-        // Restart services
-        executorService = Executors.newScheduledThreadPool(1);
+        // Restore resources or re-start services
+        executorService = Executors.newSingleThreadScheduledExecutor();
         executorService.scheduleAtFixedRate(task, 0, INTERVAL, TimeUnit.SECONDS);
     }
     */
@@ -78,7 +99,7 @@ public class Main { //implements Resource {
         for (long i = 1 ; i <= 100_000 ; i++) {
             isPrime(RND.nextInt(100_000));
         }
-        System.out.println(counter + ". Run: " + ((System.nanoTime() - start) / 1_000_000 + " ms (" + primeCache.size() + " elements in cache)"));
+        System.out.println(counter + ". Run: " + ((System.nanoTime() - start) / 1_000_000 + " ms (" + primeCache.size() + " elements cached, " + String.format(Locale.US, "%.1f%%", primeCache.size() / 1_000.0) + ")"));
         counter++;
     }
 
@@ -95,6 +116,15 @@ public class Main { //implements Resource {
         return isPrime;
     }
 
+    private void cleanCracFilesFolder() {
+        if (PropertyManager.INSTANCE.getBoolean(Constants.CLEANUP)) {
+            System.out.println("\nCleanup " + CRAC_FILES);
+            File cracFiles = new File(CRAC_FILES);
+            if (cracFiles.exists() && cracFiles.isDirectory()) {
+                Arrays.stream(Objects.requireNonNull(cracFiles.listFiles())).filter(Predicate.not(File::isDirectory)).forEach(File::delete);
+            }
+        }
+    }
 
     public static void main(String[] args) {
         Runtime runtime = Runtime.getRuntime();

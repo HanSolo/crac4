@@ -1,8 +1,7 @@
 package eu.hansolo.crac4;
 
-//import jdk.crac.Context;
-//import jdk.crac.Core;
-//import jdk.crac.Resource;
+//import jdk.crac.*;
+
 
 import java.time.Instant;
 import java.util.Map;
@@ -62,8 +61,8 @@ public class GenericCache<K, V> implements /*Resource,*/ Cache<K, V> {
     /* ******************** CRaC Methods **************************************
     @Override public void beforeCheckpoint(Context<? extends Resource> context) throws Exception {
         System.out.println("beforeCheckpoint() called in GenericCache");
-        // Shutdown services
         checkpointAt = Instant.now().getEpochSecond();
+        // Free resources or stop services
         executorService.shutdown();
         executorService.awaitTermination(5, TimeUnit.SECONDS);
         executorService = null;
@@ -80,8 +79,8 @@ public class GenericCache<K, V> implements /*Resource,*/ Cache<K, V> {
         long delta = Instant.now().getEpochSecond() - checkpointAt;
         map.entrySet().forEach(entry -> entry.getValue().setOutdatedAt(entry.getValue().outdatedAt + delta));
 
-        // Restart services
-        executorService = Executors.newScheduledThreadPool(1);
+        // Restore resources or re-start services
+        executorService = Executors.newSingleThreadScheduledExecutor();
         executorService.scheduleAtFixedRate(task, 0, INTERVAL, TimeUnit.SECONDS);
     }
     */

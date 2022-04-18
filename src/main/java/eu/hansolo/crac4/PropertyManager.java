@@ -108,6 +108,7 @@ public enum PropertyManager {
         try (OutputStream output = new FileOutputStream(propFilePath)) {
             properties.put(Constants.INITIAL_CACHE_CLEAN_DELAY, Long.toString(GenericCache.DEFAULT_CACHE_DELAY));
             properties.put(Constants.CACHE_TIMEOUT, Long.toString(GenericCache.DEFAULT_CACHE_TIMEOUT));
+            properties.put(Constants.CLEANUP, Boolean.toString(Boolean.FALSE));
             properties.store(output, null);
         } catch (IOException ex) {
             ex.printStackTrace();
