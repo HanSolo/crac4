@@ -6,6 +6,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.Objects;
@@ -36,6 +38,7 @@ public class Main implements Resource {
     private static final    Random                      RND        = new Random();
     private static final    int                         INTERVAL   = 5;
     private static final    String                      CRAC_FILES = System.getProperty("user.home") + File.separator + "crac-files";
+    private static final    DateTimeFormatter           FORMATTER  = DateTimeFormatter.ofPattern("HH:mm:ss.SSS");
     private        final    GenericCache<Long, Boolean> primeCache;
     private                 int                         counter;
     private                 Runnable                    task;
@@ -70,9 +73,6 @@ public class Main implements Resource {
         // Register this class as resource in the global context of CRaC
         Core.getGlobalContext().register(Main.this);
 
-        System.out.println("Running on CRaC (PID " + ProcessHandle.current().pid() + ")");
-        System.out.println("First run will take up to 30 seconds...");
-
         executorService.scheduleAtFixedRate(task, 0, INTERVAL, TimeUnit.SECONDS);
     }
 
@@ -98,7 +98,7 @@ public class Main implements Resource {
         for (long i = 1 ; i <= 100_000 ; i++) {
             isPrime(RND.nextInt(100_000));
         }
-        System.out.println(counter + ". Run: " + ((System.nanoTime() - start) / 1_000_000 + " ms (" + primeCache.size() + " elements cached, " + String.format(Locale.US, "%.1f%%", primeCache.size() / 1_000.0) + ")"));
+        System.out.println(FORMATTER.format(LocalDateTime.now()) + " " + counter + ". Run: " + ((System.nanoTime() - start) / 1_000_000 + " ms (" + primeCache.size() + " elements cached, " + String.format(Locale.US, "%.1f%%", primeCache.size() / 1_000.0) + ")"));
         counter++;
     }
 
@@ -127,6 +127,9 @@ public class Main implements Resource {
 
     public static void main(String[] args) {
         Runtime runtime = Runtime.getRuntime();
+        System.out.println(FORMATTER.format(LocalDateTime.now()) + " Starting application");
+        System.out.println("Running on CRaC (PID " + ProcessHandle.current().pid() + ")");
+        System.out.println("First run will take up to 30 seconds...");
         Main main = new Main(runtime);
 
         try {
