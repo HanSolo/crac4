@@ -35,14 +35,14 @@ import java.util.function.Predicate;
  * account.
  */
 public class Main implements Resource {
-    private static final    Random                      RND        = new Random();
-    private static final    int                         INTERVAL   = 5;
-    private static final    String                      CRAC_FILES = System.getProperty("user.home") + File.separator + "crac-files";
-    private static final    DateTimeFormatter           FORMATTER  = DateTimeFormatter.ofPattern("HH:mm:ss.SSS");
-    private        final    GenericCache<Long, Boolean> primeCache;
-    private                 int                         counter;
-    private                 Runnable                    task;
-    private                 ScheduledExecutorService    executorService;
+    public static final  int                         DEFAULT_INTERVAL = 5;
+    private static final Random                      RND              = new Random();
+    private static final String                      CRAC_FILES       = System.getProperty("user.home") + File.separator + "crac-files";
+    private static final DateTimeFormatter           FORMATTER        = DateTimeFormatter.ofPattern("HH:mm:ss.SSS");
+    private final        GenericCache<Long, Boolean> primeCache;
+    private              int                         counter;
+    private              Runnable                    task;
+    private              ScheduledExecutorService    executorService;
 
 
     // ******************** Constructor ***************************************
@@ -73,7 +73,8 @@ public class Main implements Resource {
         // Register this class as resource in the global context of CRaC
         Core.getGlobalContext().register(Main.this);
 
-        executorService.scheduleAtFixedRate(task, 0, INTERVAL, TimeUnit.SECONDS);
+        final long interval = PropertyManager.INSTANCE.getLong(Constants.INTERVAL, 5);
+        executorService.scheduleAtFixedRate(task, 0, interval, TimeUnit.SECONDS);
     }
 
 
@@ -89,8 +90,9 @@ public class Main implements Resource {
     @Override public void afterRestore(Context<? extends Resource> context) throws Exception {
         System.out.println("afterRestore() called in Main");
         // Restore resources or re-start services
+        final long interval = PropertyManager.INSTANCE.getLong(Constants.INTERVAL, 5);
         executorService = Executors.newSingleThreadScheduledExecutor();
-        executorService.scheduleAtFixedRate(task, 0, INTERVAL, TimeUnit.SECONDS);
+        executorService.scheduleAtFixedRate(task, 0, interval, TimeUnit.SECONDS);
     }
 
     private void checkForPrimes() {
