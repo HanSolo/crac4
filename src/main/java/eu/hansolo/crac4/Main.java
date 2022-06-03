@@ -100,7 +100,8 @@ public class Main implements Resource {
         for (long i = 1 ; i <= 100_000 ; i++) {
             isPrime(RND.nextInt(100_000));
         }
-        System.out.println(FORMATTER.format(LocalDateTime.now()) + " " + counter + ". Run: " + ((System.nanoTime() - start) / 1_000_000 + " ms (" + primeCache.size() + " elements cached, " + String.format(Locale.US, "%.1f%%", primeCache.size() / 1_000.0) + ")"));
+        //System.out.println(FORMATTER.format(LocalDateTime.now()) + " " + counter + ". Run: " + ((System.nanoTime() - start) / 1_000_000 + " ms (" + primeCache.size() + " elements cached, " + String.format(Locale.US, "%.1f%%", primeCache.size() / 1_000.0) + ")"));
+        System.out.println(counter + ". Run: " + ((System.nanoTime() - start) / 1_000_000 + " ms (" + primeCache.size() + " elements cached, " + String.format(Locale.US, "%.1f%%", primeCache.size() / 1_000.0) + ")"));
         counter++;
     }
 
