@@ -25,6 +25,9 @@ import java.util.stream.Collectors;
  * With this approach values that will be read more often will stay in the cache
  * where values that are not read within the cacheTimeout will be removed from the
  * cache.
+ * This class only implements Resource to show the order of resource registering and
+ * de-registering in the global context, meaning to say it's NOT needed to implement
+ * Resource here because this class does not rely on any resources.
  * @param <K> Key
  * @param <V> Value to cache for the key
  */
