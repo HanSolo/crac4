@@ -1,6 +1,6 @@
 package eu.hansolo.crac4;
 
-import jdk.crac.*;
+//import jdk.crac.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,7 +34,7 @@ import java.util.function.Predicate;
  * in the GenericCache that takes the time between the checkpoint and the restore into
  * account.
  */
-public class Main implements Resource {
+public class Main /*implements Resource */{
     public static final  int                         DEFAULT_INTERVAL = 5;
     private static final Random                      RND              = new Random();
     private static final String                      CRAC_FILES       = System.getProperty("user.home") + File.separator + "crac-files";
@@ -43,6 +43,7 @@ public class Main implements Resource {
     private              int                         counter;
     private              Runnable                    task;
     private              ScheduledExecutorService    executorService;
+    private              long                        start;
 
 
     // ******************** Constructor ***************************************
@@ -69,17 +70,20 @@ public class Main implements Resource {
         counter         = 1;
         task            = () -> checkForPrimes();
         executorService = Executors.newSingleThreadScheduledExecutor();
+        start           = System.nanoTime();
 
         // Register this class as resource in the global context of CRaC
-        Core.getGlobalContext().register(Main.this);
+        //Core.getGlobalContext().register(Main.this);
 
         final long interval = PropertyManager.INSTANCE.getLong(Constants.INTERVAL, 5);
         executorService.scheduleAtFixedRate(task, 0, interval, TimeUnit.SECONDS);
     }
 
 
-    // ******************** Methods *******************************************
+    /* ******************** Methods *******************************************
     @Override public void beforeCheckpoint(Context<? extends Resource> context) throws Exception {
+        System.out.println("Application warmup time: " + ((System.nanoTime() - start) / 1_000_000_000) + " sec");
+
         System.out.println("beforeCheckpoint() called in Main");
         // Free resources or stop services
         executorService.shutdown();
@@ -94,6 +98,7 @@ public class Main implements Resource {
         executorService = Executors.newSingleThreadScheduledExecutor();
         executorService.scheduleAtFixedRate(task, 0, interval, TimeUnit.SECONDS);
     }
+    */
 
     private void checkForPrimes() {
         long start = System.nanoTime();
