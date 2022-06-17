@@ -43,6 +43,7 @@ public class Main implements Resource {
     private              int                         counter;
     private              Runnable                    task;
     private              ScheduledExecutorService    executorService;
+    private              long                        start;
 
 
     // ******************** Constructor ***************************************
@@ -69,6 +70,7 @@ public class Main implements Resource {
         counter         = 1;
         task            = () -> checkForPrimes();
         executorService = Executors.newSingleThreadScheduledExecutor();
+        start           = System.nanoTime();
 
         // Register this class as resource in the global context of CRaC
         Core.getGlobalContext().register(Main.this);
@@ -80,6 +82,8 @@ public class Main implements Resource {
 
     // ******************** Methods *******************************************
     @Override public void beforeCheckpoint(Context<? extends Resource> context) throws Exception {
+        System.out.println("Application warmup time: " + ((System.nanoTime() - start) / 1_000_000_000) + " sec");
+
         System.out.println("beforeCheckpoint() called in Main");
         // Free resources or stop services
         executorService.shutdown();
