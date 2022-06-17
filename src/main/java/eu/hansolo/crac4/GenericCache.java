@@ -1,7 +1,6 @@
 package eu.hansolo.crac4;
 
-//import jdk.crac.*;
-
+import jdk.crac.*;
 
 import java.time.Instant;
 import java.util.Map;
@@ -26,10 +25,13 @@ import java.util.stream.Collectors;
  * With this approach values that will be read more often will stay in the cache
  * where values that are not read within the cacheTimeout will be removed from the
  * cache.
+ * This class only implements Resource to show the order of resource registering and
+ * de-registering in the global context, meaning to say it's NOT needed to implement
+ * Resource here because this class does not rely on any resources.
  * @param <K> Key
  * @param <V> Value to cache for the key
  */
-public class GenericCache<K, V> implements /*Resource,*/ Cache<K, V> {
+public class GenericCache<K, V> implements Resource, Cache<K, V> {
     public    static final long                     DEFAULT_CACHE_DELAY   = 30;
     public    static final long                     DEFAULT_CACHE_TIMEOUT = 60;
     private   static final int                      INTERVAL              = 1;
@@ -51,14 +53,14 @@ public class GenericCache<K, V> implements /*Resource,*/ Cache<K, V> {
         this.clear();
 
         // Register this class as resource in the global context of CRaC
-        //Core.getGlobalContext().register(GenericCache.this);
+        Core.getGlobalContext().register(GenericCache.this);
 
         // Start the executor service that calls clean() every second
         this.executorService.scheduleAtFixedRate(task, initialDelay, INTERVAL, TimeUnit.SECONDS);
     }
 
 
-    /* ******************** CRaC Methods **************************************
+    // ******************** CRaC Methods **************************************
     @Override public void beforeCheckpoint(Context<? extends Resource> context) throws Exception {
         System.out.println("beforeCheckpoint() called in GenericCache");
         checkpointAt = Instant.now().getEpochSecond();
@@ -75,7 +77,6 @@ public class GenericCache<K, V> implements /*Resource,*/ Cache<K, V> {
         * Important because otherwise with the next call to clean() all values
         * will be outdated and the cache will be completely empty
         */
-        /*
         long delta = Instant.now().getEpochSecond() - checkpointAt;
         map.entrySet().forEach(entry -> entry.getValue().setOutdatedAt(entry.getValue().outdatedAt + delta));
 
@@ -83,7 +84,6 @@ public class GenericCache<K, V> implements /*Resource,*/ Cache<K, V> {
         executorService = Executors.newSingleThreadScheduledExecutor();
         executorService.scheduleAtFixedRate(task, 0, INTERVAL, TimeUnit.SECONDS);
     }
-    */
 
 
     // ******************** Cache Methods *************************************

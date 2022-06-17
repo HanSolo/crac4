@@ -1,6 +1,6 @@
 package eu.hansolo.crac4;
 
-//import jdk.crac.*;
+import jdk.crac.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,15 +34,15 @@ import java.util.function.Predicate;
  * in the GenericCache that takes the time between the checkpoint and the restore into
  * account.
  */
-public class Main /*implements Resource*/ {
-    private static final    Random                      RND        = new Random();
-    private static final    int                         INTERVAL   = 5;
-    private static final    String                      CRAC_FILES = System.getProperty("user.home") + File.separator + "crac-files";
-    private static final    DateTimeFormatter           FORMATTER  = DateTimeFormatter.ofPattern("HH:mm:ss.SSS");
-    private        final    GenericCache<Long, Boolean> primeCache;
-    private                 int                         counter;
-    private                 Runnable                    task;
-    private                 ScheduledExecutorService    executorService;
+public class Main implements Resource {
+    public static final  int                         DEFAULT_INTERVAL = 5;
+    private static final Random                      RND              = new Random();
+    private static final String                      CRAC_FILES       = System.getProperty("user.home") + File.separator + "crac-files";
+    private static final DateTimeFormatter           FORMATTER        = DateTimeFormatter.ofPattern("HH:mm:ss.SSS");
+    private final        GenericCache<Long, Boolean> primeCache;
+    private              int                         counter;
+    private              Runnable                    task;
+    private              ScheduledExecutorService    executorService;
 
 
     // ******************** Constructor ***************************************
@@ -71,13 +71,14 @@ public class Main /*implements Resource*/ {
         executorService = Executors.newSingleThreadScheduledExecutor();
 
         // Register this class as resource in the global context of CRaC
-        //Core.getGlobalContext().register(Main.this);
+        Core.getGlobalContext().register(Main.this);
 
-        executorService.scheduleAtFixedRate(task, 0, INTERVAL, TimeUnit.SECONDS);
+        final long interval = PropertyManager.INSTANCE.getLong(Constants.INTERVAL, 5);
+        executorService.scheduleAtFixedRate(task, 0, interval, TimeUnit.SECONDS);
     }
 
 
-    /* ******************** Methods *******************************************
+    // ******************** Methods *******************************************
     @Override public void beforeCheckpoint(Context<? extends Resource> context) throws Exception {
         System.out.println("beforeCheckpoint() called in Main");
         // Free resources or stop services
@@ -89,17 +90,18 @@ public class Main /*implements Resource*/ {
     @Override public void afterRestore(Context<? extends Resource> context) throws Exception {
         System.out.println("afterRestore() called in Main");
         // Restore resources or re-start services
+        final long interval = PropertyManager.INSTANCE.getLong(Constants.INTERVAL, 5);
         executorService = Executors.newSingleThreadScheduledExecutor();
-        executorService.scheduleAtFixedRate(task, 0, INTERVAL, TimeUnit.SECONDS);
+        executorService.scheduleAtFixedRate(task, 0, interval, TimeUnit.SECONDS);
     }
-    */
 
     private void checkForPrimes() {
         long start = System.nanoTime();
         for (long i = 1 ; i <= 100_000 ; i++) {
             isPrime(RND.nextInt(100_000));
         }
-        System.out.println(FORMATTER.format(LocalDateTime.now()) + " " + counter + ". Run: " + ((System.nanoTime() - start) / 1_000_000 + " ms (" + primeCache.size() + " elements cached, " + String.format(Locale.US, "%.1f%%", primeCache.size() / 1_000.0) + ")"));
+        //System.out.println(FORMATTER.format(LocalDateTime.now()) + " " + counter + ". Run: " + ((System.nanoTime() - start) / 1_000_000 + " ms (" + primeCache.size() + " elements cached, " + String.format(Locale.US, "%.1f%%", primeCache.size() / 1_000.0) + ")"));
+        System.out.println(counter + ". Run: " + ((System.nanoTime() - start) / 1_000_000 + " ms (" + primeCache.size() + " elements cached, " + String.format(Locale.US, "%.1f%%", primeCache.size() / 1_000.0) + ")"));
         counter++;
     }
 
