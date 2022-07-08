@@ -4,6 +4,7 @@ package eu.hansolo.crac4;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
@@ -16,6 +17,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
+import java.util.stream.LongStream;
 
 
 /**
@@ -119,6 +121,13 @@ public class Main /*implements Resource */{
                 break;
             }
         }
+        primeCache.put(number, isPrime);
+        return isPrime;
+    }
+
+    public boolean isPrime2(final long number) {
+        if (primeCache.containsKey(number)) { return primeCache.get(number).get(); }
+        boolean isPrime = number > 1 && LongStream.rangeClosed(2, (long) Math.sqrt(number)).noneMatch(n -> (number % n == 0));
         primeCache.put(number, isPrime);
         return isPrime;
     }

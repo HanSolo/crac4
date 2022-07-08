@@ -97,17 +97,19 @@ public class GenericCache<K, V> implements /*Resource,*/ Cache<K, V> {
 
     @Override public void clear() { this.map = new ConcurrentHashMap<>(); }
 
-    @Override public void clean() { getExpiredKeys().forEach(key -> remove(key)); }
+    @Override public void clean() { this.map.keySet().removeAll(getExpiredKeys()); }
 
     public int size() { return map.size(); }
 
     protected Set<K> getExpiredKeys() {
+        final long now = Instant.now().getEpochSecond();
         return this.map.keySet().parallelStream()
-                       .filter(this::isExpired)
+                       .filter(key -> isExpired(now, key))
+                       //.filter(this::isExpired)
                        .collect(Collectors.toSet());
     }
 
-    protected boolean isExpired(final K key) { return Instant.now().getEpochSecond() > map.get(key).getOutdatedAt(); }
+    protected boolean isExpired(final long now, final K key) { return now > map.get(key).getOutdatedAt(); }
 
     protected CacheValue<V> createCacheValue(final V value) { return new CacheValue<>(value, Instant.now().getEpochSecond() + cacheTimeout); }
 
