@@ -72,10 +72,12 @@ public class GenericCache<K, V> implements /*Resource,*/ Cache<K, V> {
 
     @Override public void afterRestore(Context<? extends Resource> context) throws Exception {
         System.out.println("afterRestore() called in GenericCache");
-        // Take pause time into account for cached values
-        // Important because otherwise with the next call to clean() all values
-        // will be outdated and the cache will be completely empty
-        //
+        /*
+        * Take pause time into account for cached values
+        * Important because otherwise with the next call to clean() all values
+        * will be outdated and the cache will be completely empty
+        */
+        /*
         long delta = Instant.now().getEpochSecond() - checkpointAt;
         map.entrySet().forEach(entry -> entry.getValue().setOutdatedAt(entry.getValue().outdatedAt + delta));
 
