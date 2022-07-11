@@ -105,7 +105,6 @@ public class GenericCache<K, V> implements /*Resource,*/ Cache<K, V> {
         final long now = Instant.now().getEpochSecond();
         return this.map.keySet().parallelStream()
                        .filter(key -> isExpired(now, key))
-                       //.filter(this::isExpired)
                        .collect(Collectors.toSet());
     }
 
