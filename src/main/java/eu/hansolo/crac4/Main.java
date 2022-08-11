@@ -136,7 +136,7 @@ public class Main implements Resource {
     public static void main(String[] args) {
         long currentTime = System.currentTimeMillis();
         long vmStartTime = ManagementFactory.getRuntimeMXBean().getStartTime();
-        System.out.println("JVM Startup time: " + (currentTime - vmStartTime) + "ms");
+        System.out.println("JVM startup time: " + (currentTime - vmStartTime) + "ms");
 
         Runtime runtime = Runtime.getRuntime();
         System.out.println(FORMATTER.format(LocalDateTime.now()) + " Starting application");
