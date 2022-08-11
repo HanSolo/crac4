@@ -3,7 +3,7 @@ import java.text.SimpleDateFormat
 plugins {
     id 'java-library'
     id 'application'
-    id 'net.nemerosa.versioning' version '2.15.1'
+    id 'net.nemerosa.versioning' version '3.0.0'
 }
 
 description = 'CRaC 4 demo'
