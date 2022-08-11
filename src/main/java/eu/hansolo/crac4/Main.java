@@ -4,6 +4,7 @@ package eu.hansolo.crac4;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
 import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -143,6 +144,10 @@ public class Main /*implements Resource */{
     }
 
     public static void main(String[] args) {
+        long currentTime = System.currentTimeMillis();
+        long vmStartTime = ManagementFactory.getRuntimeMXBean().getStartTime();
+        System.out.println("JVM Startup time: " + (currentTime - vmStartTime) + "ms");
+
         Runtime runtime = Runtime.getRuntime();
         System.out.println(FORMATTER.format(LocalDateTime.now()) + " Starting application");
         System.out.println("Running on CRaC (PID " + ProcessHandle.current().pid() + ")");
