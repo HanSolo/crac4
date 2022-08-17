@@ -1,6 +1,7 @@
 package eu.hansolo.crac4;
 
-import jdk.crac.*;
+//import jdk.crac.*;
+import org.crac.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -111,6 +112,7 @@ public class Main implements Resource {
     }
 
     private boolean isPrime(final long number) {
+        if (number < 1) { return false; }
         if (primeCache.containsKey(number)) { return primeCache.get(number).get(); }
         boolean isPrime = true;
         for (long n = number ; n > 0 ; n--) {

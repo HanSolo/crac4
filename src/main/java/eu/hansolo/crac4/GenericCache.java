@@ -1,6 +1,7 @@
 package eu.hansolo.crac4;
 
-import jdk.crac.*;
+//import jdk.crac.*;
+import org.crac.*;
 
 import java.time.Instant;
 import java.util.Map;
