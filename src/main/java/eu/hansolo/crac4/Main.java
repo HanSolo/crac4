@@ -1,7 +1,10 @@
 package eu.hansolo.crac4;
 
 //import jdk.crac.*;
-import org.crac.*;
+
+import org.crac.Context;
+import org.crac.Core;
+import org.crac.Resource;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,7 +15,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
