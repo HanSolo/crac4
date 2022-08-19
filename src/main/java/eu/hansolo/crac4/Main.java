@@ -1,10 +1,7 @@
 package eu.hansolo.crac4;
 
-//import jdk.crac.*;
-
-import org.crac.Context;
-import org.crac.Core;
-import org.crac.Resource;
+import jdk.crac.*;
+//import org.crac.*;
 
 import java.io.File;
 import java.io.IOException;
