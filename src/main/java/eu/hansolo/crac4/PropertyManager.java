@@ -1,6 +1,5 @@
 package eu.hansolo.crac4;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -47,11 +46,7 @@ public enum PropertyManager {
     public Object get(final String KEY) { return properties.getOrDefault(KEY, ""); }
     public void set(final String KEY, final String VALUE) {
         properties.setProperty(KEY, VALUE);
-        try {
-            properties.store(new FileOutputStream(String.join(File.separator, System.getProperty("user.dir"), Constants.PROPERTIES_FILE_NAME)), null);
-        } catch (IOException exception) {
-            System.out.println("Error writing properties file: " + exception);
-        }
+        storeProperties();
     }
 
     public String getString(final String key) { return properties.getOrDefault(key, "").toString(); }

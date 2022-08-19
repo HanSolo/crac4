@@ -35,6 +35,10 @@ import java.util.function.Predicate;
  * To make that work correctly you will find some code in the afterRestore() method
  * in the GenericCache that takes the time between the checkpoint and the restore into
  * account.
+ *
+ * Log compilation:
+ * java -XX:CRaCCheckpointTo=/home/hansolo/crac-files -XX:+UnlockDiagnosticVMOptions -XX:+LogCompilation -jar build/libs/crac4-17.0.0.jar
+ * This log file can be analyzed by using JITWatch
  */
 public class Main implements Resource {
     public static final  int                         DEFAULT_INTERVAL = 5;
@@ -129,8 +133,10 @@ public class Main implements Resource {
         if (PropertyManager.INSTANCE.getBoolean(Constants.CLEANUP)) {
             System.out.println("\nCleanup " + CRAC_FILES);
             File cracFiles = new File(CRAC_FILES);
-            if (cracFiles.exists() && cracFiles.isDirectory()) {
-                Arrays.stream(Objects.requireNonNull(cracFiles.listFiles())).filter(Predicate.not(File::isDirectory)).forEach(File::delete);
+            if (null != cracFiles && cracFiles.exists() && cracFiles.isDirectory()) {
+                File[] files = cracFiles.listFiles();
+                if (null == files) { return; }
+                Arrays.stream(files).filter(Predicate.not(File::isDirectory)).forEach(File::delete);
             }
         }
     }
@@ -144,7 +150,7 @@ public class Main implements Resource {
         System.out.println(FORMATTER.format(LocalDateTime.now()) + " Starting application");
         System.out.println("Running on CRaC (PID " + ProcessHandle.current().pid() + ")");
         System.out.println("First run will take up to 30 seconds...");
-        Main main = new Main(runtime);
+        new Main(runtime);
 
         try {
             while (true) { Thread.sleep(1000); }
