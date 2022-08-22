@@ -46,11 +46,14 @@ public class Main /*implements Resource */{
     private              int                         counter;
     private              Runnable                    task;
     private              ScheduledExecutorService    executorService;
+    private              long                        appStart;
     private              long                        start;
 
 
     // ******************** Constructor ***************************************
     public Main(final Runtime runtime) {
+        appStart = System.nanoTime();
+
         if (!Files.exists(Paths.get(CRAC_FILES))) {
             try {
                 System.out.println("Creating " + CRAC_FILES);
@@ -64,6 +67,7 @@ public class Main /*implements Resource */{
             // Clean crac-files folder only if not in automatic checkpoint mode
             cleanCracFilesFolder();
             System.out.println("App stopped in shutdown hook");
+            System.out.println("Application ran for: " + (System.nanoTime() - appStart) / 1_000_000 + "ms");
         }));
 
         final long initialCleanDelay = PropertyManager.INSTANCE.getLong(Constants.INITIAL_CACHE_CLEAN_DELAY, 50);
