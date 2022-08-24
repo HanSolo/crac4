@@ -36,6 +36,8 @@ import java.util.stream.LongStream;
  * To make that work correctly you will find some code in the afterRestore() method
  * in the GenericCache that takes the time between the checkpoint and the restore into
  * account.
+ *
+ * Build native image with graalvm for comparing startup: native-image -jar crac4-17.0.0.jar --no-server -H:Name=crac4 --no-fallback --static
  */
 public class Main /*implements Resource */{
     public static final  int                         DEFAULT_INTERVAL = 5;
@@ -119,6 +121,7 @@ public class Main /*implements Resource */{
 
     private boolean isPrime(final long number) {
         if (primeCache.containsKey(number)) { return primeCache.get(number).get(); }
+        if (number <= 0) { return false; }
         boolean isPrime = true;
         for (long n = number ; n > 0 ; n--) {
             if (n != number && n != 1 && number % n == 0) {
