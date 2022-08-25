@@ -234,3 +234,12 @@ And because the cache was also stored when we created the checkpoint, it will di
 be filled after we restore the app from the checkpoint. And with the cache filled, the
 call to ```checkForPrimes()``` will return quickly.
 You can imagine that this approach drastically reduces the startup times of applications.
+
+
+## JVM Flags
+-server
+-client (only on 32 bit Systems)
+-Xint (only use the interpreter, no compiling)
+-Xcomp (compiles all byte code directly to machine code on first use...no JIT optimisation benefit and no interpretation)
+
+
