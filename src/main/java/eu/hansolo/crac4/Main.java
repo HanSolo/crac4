@@ -5,6 +5,7 @@ package eu.hansolo.crac4;
 import java.io.File;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
 import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -41,6 +42,7 @@ import java.util.stream.LongStream;
  */
 public class Main /*implements Resource */{
     public static final  int                         DEFAULT_INTERVAL = 5;
+    private static final RuntimeMXBean               RUNTIME_MX_BEAN  = ManagementFactory.getRuntimeMXBean();
     private static final Random                      RND              = new Random();
     private static final String                      CRAC_FILES       = System.getProperty("user.home") + File.separator + "crac-files";
     private static final DateTimeFormatter           FORMATTER        = DateTimeFormatter.ofPattern("HH:mm:ss.SSS");
@@ -151,13 +153,12 @@ public class Main /*implements Resource */{
     }
 
     public static void main(String[] args) {
-        long currentTime = System.currentTimeMillis();
-        long vmStartTime = ManagementFactory.getRuntimeMXBean().getStartTime();
-        System.out.println("JVM Startup time: " + (currentTime - vmStartTime) + "ms");
+        System.out.println("JVM up time     : " + (RUNTIME_MX_BEAN.getUptime()) + "ms");
+        System.out.println("JVM startup time: " + (System.currentTimeMillis() - RUNTIME_MX_BEAN.getStartTime()) + "ms");
 
         Runtime runtime = Runtime.getRuntime();
         System.out.println(FORMATTER.format(LocalDateTime.now()) + " Starting application");
-        System.out.println("Running on CRaC (PID " + ProcessHandle.current().pid() + ")");
+        System.out.println("Running on CRaC (PID " + RUNTIME_MX_BEAN.getPid() + ")");
         System.out.println("First run will take up to 30 seconds...");
         Main main = new Main(runtime);
 
