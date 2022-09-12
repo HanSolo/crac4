@@ -78,6 +78,7 @@ public class Main implements Resource {
         start           = System.nanoTime();
 
         // Register this class as resource in the global context of CRaC
+        System.out.println("Register Resource: Main");
         Core.getGlobalContext().register(Main.this);
 
         final long interval = PropertyManager.INSTANCE.getLong(Constants.INTERVAL, 5);

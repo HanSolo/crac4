@@ -54,6 +54,7 @@ public class GenericCache<K, V> implements Resource, Cache<K, V> {
         this.clear();
 
         // Register this class as resource in the global context of CRaC
+        System.out.println("Register Resource: GenericCache");
         Core.getGlobalContext().register(GenericCache.this);
 
         // Start the executor service that calls clean() every second
