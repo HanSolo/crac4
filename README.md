@@ -31,11 +31,11 @@ increase a counter.
 private void checkForPrimes() {
     long start = System.nanoTime();
     for (long i = 1 ; i <= 100_000 ; i++) {
-    isPrime(RND.nextInt(100_000));
+        isPrime(RND.nextInt(100_000));
     }
     System.out.println(counter + ". Run: " + ((System.nanoTime() - start) / 1_000_000 + " ms (" + primeCache.size() + " elements cached, " + String.format(Locale.US, "%.1f%%", primeCache.size() / 1_000.0) + ")"));
     counter++;
-    }
+}
 ```
 
 The <b>isPrime(final long number)</b> method will be called for each number and either directly returns
