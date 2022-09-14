@@ -15,7 +15,7 @@ The cache timeout and the initial delay can be adjusted using properties file na
 will be stored in your user home folder.
 It contains two entries:
 ```
-initial_cache_clean_delay=60
+initial_cache_clean_delay=50
 cache_timeout=10
 ```
 You might need to adjust those values depending on your machine settings (e.g. on my M1 Mac the first run just took 2.5s where on my older Intel Mac it took 22s).
@@ -31,17 +31,18 @@ increase a counter.
 private void checkForPrimes() {
     long start = System.nanoTime();
     for (long i = 1 ; i <= 100_000 ; i++) {
-        isPrime(RND.nextInt(100_000));
+    isPrime(RND.nextInt(100_000));
     }
-    System.out.println(counter + ". Run: " + ((System.nanoTime() - start) / 1_000_000 + " ms (" + primeCache.size() + " elements in cache)"));
+    System.out.println(counter + ". Run: " + ((System.nanoTime() - start) / 1_000_000 + " ms (" + primeCache.size() + " elements cached, " + String.format(Locale.US, "%.1f%%", primeCache.size() / 1_000.0) + ")"));
     counter++;
-}
+    }
 ```
 
 The <b>isPrime(final long number)</b> method will be called for each number and either directly returns
 the result (in case it's already in the cache) or calculates the result and stores it in the cache.
 ```java
 private boolean isPrime(final long number) {
+    if (number < 1) { return false; }
     if (primeCache.containsKey(number)) { return primeCache.get(number).get(); }
     boolean isPrime = true;
     for (long n = number ; n > 0 ; n--) {
@@ -61,7 +62,7 @@ You need a Linux x64 machine to run the pre-build OpenJDK version incl. CRaC (e.
 <br>
 
 #### Download [OpenJDK pre-build incl. CRaC](https://github.com/CRaC/openjdk-builds/releases/):
-```wget https://github.com/CRaC/openjdk-builds/releases/download/17-crac%2B2/jdk17-crac+2.tar.gz```
+```wget https://github.com/CRaC/openjdk-builds/releases/download/17-crac%2B3/openjdk-17-crac+3_linux-x64.tar.gz```
 
 <br>
 
@@ -76,19 +77,19 @@ sudo mkdir /usr/lib/jvm
 ```
 Now extract the tar.gz file
 ```shell
-sudo tar zxvf jdk17-crac+2.tar.gz -C /usr/lib/jvm
+sudo tar zxvf openjdk-17-crac+3_linux-x64.tar.gz -C /usr/lib/jvm
 ```
 
 <br>
 
 #### Set JAVA_HOME and add it to PATH:
 ```
-$ export JAVA_HOME=/usr/lib/jvm/jdk17-crac+2
+$ export JAVA_HOME=/usr/lib/jvm/openjdk-17-crac+3_linux-x64
 $ export PATH=$JAVA_HOME/bin:$PATH
 $ java -version
 openjdk version "17-crac" 2021-09-14
-OpenJDK Runtime Environment (build 17-crac+2-10)
-OpenJDK 64-Bit Server VM (build 17-crac+2-10, mixed mode, sharing)
+OpenJDK Runtime Environment (build 17-crac+3-15)
+OpenJDK 64-Bit Server VM (build 17-crac+3-15, mixed mode, sharing)
 ```
 
 <br>

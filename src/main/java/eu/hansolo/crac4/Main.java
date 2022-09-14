@@ -36,7 +36,7 @@ import java.util.function.Predicate;
  * account.
  *
  * Log compilation:
- * java -XX:CRaCCheckpointTo=/home/hansolo/crac-files -XX:+UnlockDiagnosticVMOptions -XX:+LogCompilation -jar build/libs/crac4-17.0.0.jar
+ * java -Xmx256m -XX:MaxRAMPercentage=75 -XX:+UseParallelGC -XX:CRaCCheckpointTo=/home/hansolo/crac-files -XX:+UnlockDiagnosticVMOptions -XX:+LogCompilation -jar build/libs/crac4-17.0.0.jar
  * This log file can be analyzed by using JITWatch
  */
 public class Main implements Resource {
