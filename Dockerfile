@@ -10,5 +10,10 @@ RUN tar --extract --file $JAVA_HOME/openjdk.tar.gz --directory "$JAVA_HOME" --st
 
 RUN mkdir -p /opt/crac-files
 
+COPY ./start.sh /opt/app/start-docker.sh
+RUN  chmod +x /opt/app/start-docker.sh
+
+
 COPY build/libs/crac4-17.0.0.jar /opt/app/crac4-17.0.0.jar
-CMD ["java", "-XX:CRaCCheckpointTo=/opt/crac-files/", "-jar", "/opt/app/crac4-17.0.0.jar"]
+#CMD ["java", "-XX:CRaCCheckpointTo=/opt/crac-files/", "-jar", "/opt/app/crac4-17.0.0.jar"]
+RUN bash -c "/opt/app/start-docker.sh"
