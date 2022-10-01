@@ -287,3 +287,9 @@ docker run -it --privileged --rm --name $1 crac4:checkpoint java -XX:CRaCRestore
 ```
 4. Make the script executable by executing ```chmod +x restore_docker.sh```
 5. Now you can start the docker container multiple times executing ```restore_docker.sh NAME_OF_CONTAINER```
+
+If you would like to start the original container without the checkpoint you can still
+do that by executing the following command
+```
+docker run -it --privileged --rm --name crac4 crac4 java -jar /opt/app/crac4-17.0.0.jar
+```
