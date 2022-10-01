@@ -15,5 +15,5 @@ RUN  chmod +x /opt/app/start-docker.sh
 
 
 COPY build/libs/crac4-17.0.0.jar /opt/app/crac4-17.0.0.jar
-#CMD ["java", "-XX:CRaCCheckpointTo=/opt/crac-files/", "-jar", "/opt/app/crac4-17.0.0.jar"]
-CMD [ "/bin/bash -c '/opt/app/start-docker.sh'" ]
+
+CMD ["/bin/bash"]

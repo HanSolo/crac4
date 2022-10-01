@@ -235,3 +235,39 @@ And because the cache was also stored when we created the checkpoint, it will di
 be filled after we restore the app from the checkpoint. And with the cache filled, the
 call to ```checkForPrimes()``` will return quickly.
 You can imagine that this approach drastically reduces the startup times of applications.
+
+</br>
+
+### Running the demo in a docker container (on a Linux x64 machine)
+#### 1. Start the application in a docker container
+1. Open a shell window
+2. Run ``` docker run -it --privileged --rm --name crac4 crac4 ```
+3. In the docker container run</br> 
+   ``` 
+   cd /opt/app 
+   java -XX:CRaCCheckpointTo=/opt/crac-files -jar crac4-17.0.0.jar
+   ```
+4. Note the PID of the program   
+
+</br>
+
+#### 2. Start a 2nd shell window and create the checkpoint
+1. Open a second shell window
+2. Run ``` docker exec -it -u root crac4 /bin/bash ```
+3. Wait until the program in the first window reaches for example the 17th iteration
+4. Take the PID from shell 1 and run ``` jcmd PID JDK.checkpoint```
+5. In the first shell window the application should have created the checkpoint 
+6. In second shell window run ``` exit ``` to get back to your machine
+
+</br>
+
+#### 3. Commit the current state of the docker container 
+1. Now get the CONTAINER_ID from shell window 1 by execute ``` docker ps -a ``` in shell window 2
+2. Run ``` docker commit CONTAINER_ID crac4:checkpoint ``` in shell window 2
+3. Go back to shell window 1 and press CTRL+C to stop the running application
+
+</br>
+
+#### 4. Run the docker container from the saved state incl. the checkpoint
+Now you can start the docker container from the checkpoint by executing
+``` docker run -it --privileged --rm --name crac4 crac4:checkpoint java -XX:CRaCRestoreFrom=/opt/crac-files ```
