@@ -271,3 +271,19 @@ You can imagine that this approach drastically reduces the startup times of appl
 #### 4. Run the docker container from the saved state incl. the checkpoint
 Now you can start the docker container from the checkpoint by executing
 ``` docker run -it --privileged --rm --name crac4 crac4:checkpoint java -XX:CRaCRestoreFrom=/opt/crac-files ```
+
+</br>
+
+#### 5. Create a shell script to restore multiple times
+1. Open a shell window
+2. Create a text file named ```restore_docker.sh```
+3. Add
+```
+#!/bin/bash
+
+echo "docker run -it --privileged --rm --name $1 crac4:checkpoint java -XX:CRaCRestoreFrom=/opt/crac-files"
+
+docker run -it --privileged --rm --name $1 crac4:checkpoint java -XX:CRaCRestoreFrom=/opt/crac-files
+```
+4. Make the script executable by executing ```chmod +x restore_docker.sh```
+5. Now you can start the docker container multiple times executing ```restore_docker.sh NAME_OF_CONTAINER```
